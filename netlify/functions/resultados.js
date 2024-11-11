@@ -2,21 +2,25 @@ const pool = require('./db-config');
 
 exports.handler = async function(event, context) {
   console.log('Iniciando función resultados');
-  
+  console.log('Variables de entorno:', {
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+  });
+
   try {
     const connection = await pool.getConnection();
-    console.log('Conexión obtenida exitosamente');
-
+    console.log('Conexión a BD exitosa');
+    
     try {
-      // Intenta ejecutar la consulta
       const [votos] = await connection.query('SELECT * FROM votos');
-      console.log('Consulta ejecutada exitosamente');
+      console.log(`Consulta exitosa: ${votos.length} registros encontrados`);
       
       return {
         statusCode: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*' // Permite CORS
+          'Access-Control-Allow-Origin': '*'
         },
         body: JSON.stringify(votos)
       };
@@ -25,24 +29,25 @@ exports.handler = async function(event, context) {
       return {
         statusCode: 500,
         body: JSON.stringify({
-          error: 'Error al ejecutar la consulta',
-          details: queryError.message
+          error: 'Error en la consulta',
+          message: queryError.message
         })
       };
     } finally {
-      // Siempre libera la conexión
       connection.release();
     }
   } catch (error) {
     console.error('Error de conexión:', error);
     return {
-      statusCode: 500,
+      statusCode: 502,
       body: JSON.stringify({
-        error: 'Error al conectar con la base de datos',
-        details: error.message,
-        host: process.env.DB_HOST,
-        database: process.env.DB_NAME,
-        port: process.env.DB_PORT
+        error: 'Error de conexión a la base de datos',
+        message: error.message,
+        config: {
+          host: process.env.DB_HOST,
+          database: process.env.DB_NAME,
+          port: process.env.DB_PORT
+        }
       })
     };
   }
