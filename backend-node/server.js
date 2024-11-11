@@ -31,27 +31,64 @@ app.get('/api/resultados', async (req, res) => {
 
 // Registrar un nuevo voto
 app.post('/api/votar', async (req, res) => {
- try {
-   const { nickname, comentario, valoracion, candidato } = req.body;
-   await pool.query(
-     'INSERT INTO votos (nickname, comentario, valoracion, candidato) VALUES (?, ?, ?, ?)',
-     [nickname, comentario, valoracion, candidato]
-   );
-   res.json({ message: 'Voto registrado exitosamente' });
- } catch (error) {
-   res.status(500).json({ error: 'Error al registrar voto' });
- }
+  try {
+    const { nickname, comentario, valoracion, candidato } = req.body;
+    
+    // Validación del candidato
+    if (candidato !== 'David Larousse' && candidato !== 'Jonathan Lowrie') {
+      return res.status(400).json({ 
+        error: 'Candidato inválido. Debe ser "David Larousse" o "Jonathan Lowrie"' 
+      });
+    }
+
+    await pool.query(
+      'INSERT INTO votos (nickname, comentario, valoracion, candidato) VALUES (?, ?, ?, ?)',
+      [nickname, comentario, valoracion, candidato]
+    );
+    
+    res.json({ message: 'Voto registrado exitosamente' });
+  } catch (error) {
+    res.status(500).json({ 
+      error: 'Error al registrar voto',
+      details: error.message 
+    });
+  }
 });
 
-// Reiniciar la votación
+
+// Reiniciar la votación (con histórico)
 app.post('/api/reset', async (req, res) => {
- try {
-   await pool.query('TRUNCATE TABLE votos');
-   res.json({ message: 'Votación reiniciada exitosamente' });
- } catch (error) {
-   res.status(500).json({ error: 'Error al reiniciar votación' });
- }
+  try {
+    // Iniciamos la transacción
+    await pool.query('START TRANSACTION');
+
+    // Insertamos en el histórico
+    await pool.query(`
+      INSERT INTO votos_historico (vh_id, vh_nickname, vh_comentario, vh_valoracion, vh_candidato, vh_created_at)
+      SELECT id, nickname, comentario, valoracion, candidato, created_at
+      FROM votos
+    `);
+
+    // Truncamos la tabla de votos
+    await pool.query('TRUNCATE TABLE votos');
+
+    // Confirmamos la transacción
+    await pool.query('COMMIT');
+
+    res.json({ 
+      message: 'Votación reiniciada exitosamente' 
+    });
+  } catch (error) {
+    // Si hay error, revertimos
+    await pool.query('ROLLBACK');
+    console.error('Error en reset:', error);
+    res.status(500).json({ 
+      error: 'Error al reiniciar votación y respaldar datos',
+      details: error.message 
+    });
+  }
 });
+
 
 // Para probar la conexion a la base de datos 
 app.get('/api/testdb', async (req, res) => {
