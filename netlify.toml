@@ -4,11 +4,15 @@
   publish = "build"          
   functions = "../netlify/functions"
 
+[functions]
+  external_node_modules = ["mysql2"]
+  node_bundler = "esbuild"
+
 [dev]
   framework = "#custom"
   command = "npm --prefix frontend-react start"    
   targetPort = 3000       
-  port = 8888 
+  port = 8888
 
 [[redirects]]
   from = "/*"
