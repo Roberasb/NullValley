@@ -1,0 +1,32 @@
+# gitignore generico
+# Ignorar archivos y carpetas relacionadas con Docker
+docker-compose.override.yml
+.env
+*.env
+**/.env
+
+# Ignorar imágenes, contenedores y volúmenes generados
+**/docker-data/
+docker-volume/
+docker/volumes/
+*.log
+*.tmp
+
+# Ignorar volúmenes y datos persistentes
+mysql_data/
+postgres_data/
+redis_data/
+db_data/
+
+# Ignorar archivos de configuración específicos que no quieres versionar
+**/Dockerfile.dev
+**/docker-compose.override.yml
+**/docker-compose.*.yml
+
+# Ignorar archivos temporales y de configuración del sistema operativo
+*.swp
+*.swo
+*.bak
+*~
+.DS_Store
+Thumbs.db

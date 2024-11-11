@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpsw
+      MYSQL_DATABASE: bd_null_valley
+      MYSQL_USER: adminnv
+      MYSQL_PASSWORD: adminnv123*
+    ports:
+      - "3306:3306"
+    volumes:
+      - E:/Github/NullValley/DockerDesarrolloLocal/NV_MySQL/mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+    driver: local

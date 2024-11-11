@@ -1,0 +1,43 @@
+# Configuración de entorno, SOLO POR SER PRUEBA QUIZAS DEJARE LA CONFIGURACION EN EL REPO
+.env
+.env.local
+.env.*.local
+
+# Módulos de Node
+node_modules/
+
+# Archivos de log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Entorno de producción
+dist/
+build/
+
+# Cobertura de pruebas
+coverage/
+
+# Directorios de caché
+.cache/
+.parcel-cache/
+
+# Archivos de servicio de proceso
+*.pid
+*.pid.lock
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuración del editor
+.idea/
+.vscode/
+*.swp
+
+# Caché de ESLint y otros linters
+.eslintcache
+
+# Archivos de perfil de procesos
+.nyc_output/
