@@ -1,19 +1,54 @@
-const mysql = require('mysql2/promise');
+const pool = require('./db-config');
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-  waitForConnections: true,
-  connectionLimit: 10,
-  ssl: {
-    rejectUnauthorized: false,
-    minVersion: 'TLSv1.2'
-  },
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0
-});
+exports.handler = async function(event, context) {
+  console.log('Iniciando función resultados');
+  console.log('Variables de entorno:', {
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+  });
 
-module.exports = pool;
+  try {
+    const connection = await pool.getConnection();
+    console.log('Conexión a BD exitosa');
+    
+    try {
+      const [votos] = await connection.query('SELECT * FROM votos');
+      console.log(`Consulta exitosa: ${votos.length} registros encontrados`);
+      
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(votos)
+      };
+    } catch (queryError) {
+      console.error('Error en la consulta:', queryError);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          error: 'Error en la consulta',
+          message: queryError.message
+        })
+      };
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error('Error de conexión:', error);
+    return {
+      statusCode: 502,
+      body: JSON.stringify({
+        error: 'Error de conexión a la base de datos',
+        message: error.message,
+        config: {
+          host: process.env.DB_HOST,
+          database: process.env.DB_NAME,
+          port: process.env.DB_PORT
+        }
+      })
+    };
+  }
+};
