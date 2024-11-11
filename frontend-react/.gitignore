@@ -1,0 +1,56 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Configuraciones locales de entorno, Solo por ser prueba quizas los deje en el repo, se que esto no se debe hacer.
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env
+
+# Dependencias de Node
+/.pnp
+.pnp.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de construcción
+build/
+public/*.html
+
+# Archivos temporales de tests
+coverage/
+
+# Cache y logs
+.cache/
+.parcel-cache/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Configuración de la extensión ESLint en VS Code
+.eslintcache
+
+# Reporte de errores de npm
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Reporte de errores de yarn
+yarn-error.log
+
+# Archivos generados por la extensión de profiling de React
+react-profile.json
+
+# Archivos de configuración del editor
+.idea/
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/jsconfig.json
+.vscode/*.code-workspace
+
+# Archivos de servicio de previsualización de Webpack
+*.pid
+
+# Archivos de configuración del sistema operativo
+*.swp
