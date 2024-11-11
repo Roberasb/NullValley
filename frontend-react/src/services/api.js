@@ -1,15 +1,23 @@
 import filterComment from '../utils/wordFilter';
 
-const API_URL = 'http://localhost:5000/api'; //esto debiese moverse al ENV, pero como no subire env lo dejo aca.
+// URL base según el entorno
+const API_URL = process.env.NODE_ENV === 'development' 
+  ? 'http://localhost:5000/api'           // Para desarrollo local
+  : '/.netlify/functions';                // Para producción en Netlify
 
 const VotingService = {
   // Obtener todos los votos
   async getVotes() {
     try {
+      // En Netlify la ruta será /.netlify/functions/resultados
       const response = await fetch(`${API_URL}/resultados`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       return this.formatVotesData(data);
     } catch (error) {
+      console.error('Error en getVotes:', error);
       throw new Error('Error al obtener votos');
     }
   },
@@ -17,6 +25,7 @@ const VotingService = {
   // Registrar un voto
   async submitVote({ nickname, comment, candidate, rating }) {
     try {
+      // En Netlify la ruta será /.netlify/functions/votar
       const response = await fetch(`${API_URL}/votar`, {
         method: 'POST',
         headers: {
@@ -29,8 +38,12 @@ const VotingService = {
           candidato: candidate
         })
       });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       return await response.json();
     } catch (error) {
+      console.error('Error en submitVote:', error);
       throw new Error('Error al registrar voto');
     }
   },
@@ -38,11 +51,16 @@ const VotingService = {
   // Resetear votación
   async resetVotes() {
     try {
+      // En Netlify la ruta será /.netlify/functions/reset
       const response = await fetch(`${API_URL}/reset`, {
         method: 'POST'
       });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       return await response.json();
     } catch (error) {
+      console.error('Error en resetVotes:', error);
       throw new Error('Error al resetear votación');
     }
   },
