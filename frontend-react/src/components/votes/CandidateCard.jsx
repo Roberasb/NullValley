@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CandidateCard = ({ candidate }) => {
+const CandidateCard = ({ candidate, id }) => {
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
       <div className="text-center">
@@ -20,7 +20,7 @@ const CandidateCard = ({ candidate }) => {
         <div className="space-y-2 max-h-60 overflow-y-auto">
           {candidate.comments.map((comment, index) => (
             <div 
-              key={index} 
+              key={`${id}-${index}`} 
               className={`p-2 rounded ${comment.rating > 0 ? 'bg-green-50' : 'bg-red-50'}`}
             >
               <p className="font-semibold">{comment.nickname}</p>
