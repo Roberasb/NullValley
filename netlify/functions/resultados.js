@@ -1,53 +1,44 @@
 const pool = require('./db-config');
 
 exports.handler = async function(event, context) {
+  // Asegura que la función tenga tiempo suficiente para conectar
+  context.callbackWaitsForEmptyEventLoop = false;
+  
   console.log('Iniciando función resultados');
-  console.log('Variables de entorno:', {
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-  });
-
+  
   try {
-    const connection = await pool.getConnection();
-    console.log('Conexión a BD exitosa');
+    // Test de conexión rápido
+    const [testResult] = await pool.query('SELECT 1');
+    console.log('Prueba de conexión exitosa');
+
+    const [votos] = await pool.query('SELECT * FROM votos');
+    console.log(`${votos.length} votos recuperados`);
     
-    try {
-      const [votos] = await connection.query('SELECT * FROM votos');
-      console.log(`Consulta exitosa: ${votos.length} registros encontrados`);
-      
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify(votos)
-      };
-    } catch (queryError) {
-      console.error('Error en la consulta:', queryError);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: 'Error en la consulta',
-          message: queryError.message
-        })
-      };
-    } finally {
-      connection.release();
-    }
-  } catch (error) {
-    console.error('Error de conexión:', error);
     return {
-      statusCode: 502,
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify(votos)
+    };
+  } catch (error) {
+    console.error('Error detallado:', {
+      message: error.message,
+      code: error.code,
+      errno: error.errno,
+      sqlMessage: error.sqlMessage,
+      host: process.env.DB_HOST,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT
+    });
+    
+    return {
+      statusCode: 500,
       body: JSON.stringify({
-        error: 'Error de conexión a la base de datos',
-        message: error.message,
-        config: {
-          host: process.env.DB_HOST,
-          database: process.env.DB_NAME,
-          port: process.env.DB_PORT
-        }
+        error: 'Error en base de datos',
+        details: error.message,
+        code: error.code
       })
     };
   }

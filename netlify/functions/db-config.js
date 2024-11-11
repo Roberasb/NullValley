@@ -7,13 +7,22 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,  // Reducido para Netlify
+  queueLimit: 0,      // Sin límite de cola
   ssl: {
     rejectUnauthorized: false,
     minVersion: 'TLSv1.2'
   },
   enableKeepAlive: true,
-  keepAliveInitialDelay: 0
+  keepAliveInitialDelay: 0,
+  connectTimeout: 10000,  // 10 segundos
+  timezone: '+00:00',    // Asegura consistencia horaria
+  multipleStatements: false  // Por seguridad
+});
+
+// Añadir listener para errores de conexión
+pool.on('error', (err) => {
+  console.error('Pool error:', err);
 });
 
 module.exports = pool;
