@@ -1,14 +1,23 @@
-import React from "react";
-import CandidateCard from "./CandidateCard";
-import VotingForm from "./VotingForm";
-import LoadingSpinner from "../layout/LoadingSpinner";
-import Alert from "../layout/Alert";
-import { useVoting } from "../../context/VotingContext";
-import filterComment from '../../utils/wordFilter';
+import React from 'react';
+import CandidateCard from './CandidateCard';
+import VotingForm from './VotingForm';
+import LoadingSpinner from '../layout/LoadingSpinner';
+import Alert from '../layout/Alert';
+import { useVoting } from '../../context/VotingContext';
+
+// Array de palabras prohibidas (mismo que en wordFilter)
+const prohibitedWords = [
+  'Manzana',
+  'coliflor',
+  'bombilla',
+  'derecha',
+  'izquierda', 
+  'rojo',
+  'azul'
+];
 
 const VotingPage = () => {
-  const { candidates, totalVotes, resetVoting, loading, error, notification } =
-    useVoting();
+  const { candidates, totalVotes, resetVoting, loading, error, notification } = useVoting();
 
   const getWinner = () => {
     if (candidates.david.score > candidates.jonathan.score) {
@@ -25,26 +34,35 @@ const VotingPage = () => {
 
   const getAllComments = () => {
     return [
-      ...candidates.david.comments.map((c) => ({
-        ...c,
-        candidato: "David Larousse",
-      })),
-      ...candidates.jonathan.comments.map((c) => ({
-        ...c,
-        candidato: "Jonathan Lowrie",
-      })),
-    ].sort((a, b) => b.rating - a.rating);
+      ...candidates.david.comments.map(c => ({ ...c, candidato: 'David Larousse' })),
+      ...candidates.jonathan.comments.map(c => ({ ...c, candidato: 'Jonathan Lowrie' }))
+    ];
+  };
+
+  const hasProhibitedWord = (text) => {
+    return prohibitedWords.some(word => {
+      const regex = new RegExp(`\\b${word}\\b`, 'gi');
+      return regex.test(text);
+    });
   };
 
   const getCommentsLists = () => {
     const allComments = getAllComments();
-    const withBadWords = allComments.filter(comment => 
-      filterComment(comment.comment) !== comment.comment);
-    const withoutBadWords = allComments.filter(comment => 
-      filterComment(comment.comment) === comment.comment);
+    // Agregamos console.log para debug
+    //console.log('Todos los comentarios:', allComments);
     
+    const withBadWords = allComments.filter(comment => {
+      const has = hasProhibitedWord(comment.originalComment);
+      //console.log('Comentario:', comment.comment, 'Tiene palabras prohibidas:', has);
+      return has;
+    });
+    
+    const withoutBadWords = allComments.filter(comment => 
+      !hasProhibitedWord(comment.originalComment)
+    );
+
     return { withBadWords, withoutBadWords };
-};
+  };
 
   return (
     <div className="space-y-8">

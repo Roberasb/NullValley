@@ -85,7 +85,8 @@ const VotingService = {
 
       formattedData[candidateKey].comments.push({
         nickname: vote.nickname,
-        comment: filterComment(vote.comentario), // Ahora aplico la ofuscación aca, al cargar
+        comment: filterComment(vote.comentario), // comentario ofuscado para mostrar
+        originalComment: vote.comentario,        // comentario original para verificar
         rating: vote.valoracion
       });
       

@@ -1,5 +1,5 @@
 // definicion palabras prohibidas
-const prohibitedWords = [
+export const prohibitedWords = [
   'Manzana',
   'coliflor',
   'bombilla',
