@@ -17,7 +17,6 @@ yarn-error.log*
 
 # Archivos de construcción
 build/
-public/*.html
 
 # Archivos temporales de tests
 coverage/
