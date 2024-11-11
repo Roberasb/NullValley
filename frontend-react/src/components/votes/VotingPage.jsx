@@ -4,6 +4,7 @@ import VotingForm from "./VotingForm";
 import LoadingSpinner from "../layout/LoadingSpinner";
 import Alert from "../layout/Alert";
 import { useVoting } from "../../context/VotingContext";
+import filterComment from '../../utils/wordFilter';
 
 const VotingPage = () => {
   const { candidates, totalVotes, resetVoting, loading, error, notification } =
@@ -37,15 +38,13 @@ const VotingPage = () => {
 
   const getCommentsLists = () => {
     const allComments = getAllComments();
-    const withBadWords = allComments.filter((comment) =>
-      comment.comment.includes("*")
-    );
-    const withoutBadWords = allComments.filter(
-      (comment) => !comment.comment.includes("*")
-    );
-
+    const withBadWords = allComments.filter(comment => 
+      filterComment(comment.comment) !== comment.comment);
+    const withoutBadWords = allComments.filter(comment => 
+      filterComment(comment.comment) === comment.comment);
+    
     return { withBadWords, withoutBadWords };
-  };
+};
 
   return (
     <div className="space-y-8">
