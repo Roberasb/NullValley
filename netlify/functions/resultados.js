@@ -47,3 +47,45 @@ exports.handler = async function(event, context) {
     };
   }
 };
+
+/* Este codigo esta comentado porque me sirve para hacer pruebas, genera datos en duro para probar la respuesta.
+exports.handler = async function(event, context) {
+  console.log("Función resultados ejecutándose");
+  
+  try {
+    // Datos de prueba estáticos
+    const datosTest = [
+      {
+        id: 1,
+        nickname: "Test1",
+        comentario: "Comentario test 1",
+        valoracion: 5,
+        candidato: "David Larousse"
+      },
+      {
+        id: 2,
+        nickname: "Test2",
+        comentario: "Comentario test 2",
+        valoracion: 4,
+        candidato: "Jonathan Lowrie"
+      }
+    ];
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify(datosTest)
+    };
+  } catch (error) {
+    console.error("Error:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Error en la función" })
+    };
+  }
+};
+
+*/

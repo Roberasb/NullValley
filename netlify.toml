@@ -1,18 +1,19 @@
 [build]
-  base = "frontend-react"    # FIX Ya está en el directorio frontend-react
-  command = "npm run build"  # No necesitamos cd
-  publish = "build"          # El build se generará aquí
-
-[functions]
-  directory = "../netlify/functions"  # Ruta relativa desde frontend-react
-  external_node_modules = ["mysql2"]
-  included_files = ["../netlify/functions/**"]
-  node_bundler = "esbuild"
+  base = "frontend-react"    
+  command = "npm run build"  
+  publish = "build"          
+  functions = "../netlify/functions"
 
 [dev]
-  command = "npm start"    # Simplificado
+  framework = "#custom"
+  command = "npm --prefix frontend-react start"    
   targetPort = 3000       
-  port = 8888
+  port = 8888 
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 [[redirects]]
   from = "/api/*"
