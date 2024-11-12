@@ -1,4 +1,3 @@
-require('dotenv').config();
 const mysql = require('mysql2/promise');
 
 // Valores de conexión
@@ -22,6 +21,14 @@ const dbConfig = {
   multipleStatements: false  // Por seguridad
 };
 
+// Solo cargar dotenv en desarrollo
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    require('dotenv').config();
+  } catch (error) {
+    console.log('dotenv no disponible en producción');
+  }
+}
 /*
 console.log('Configuración de BD:', {
   host: dbConfig.host,
