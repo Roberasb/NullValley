@@ -1,50 +1,54 @@
 const pool = require('./db-config');
 
 exports.handler = async function(event, context) {
-  // Asegura que la función tenga tiempo suficiente para conectar
-  context.callbackWaitsForEmptyEventLoop = false;
-  
   console.log('Iniciando función resultados');
   
   try {
-    // Test de conexión rápido
-    const [testResult] = await pool.query('SELECT 1');
-    console.log('Prueba de conexión exitosa');
+    const connection = await pool.getConnection();
+    console.log('Conexión obtenida exitosamente');
 
-    const [votos] = await pool.query('SELECT * FROM votos');
-    console.log(`${votos.length} votos recuperados`);
-    
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify(votos)
-    };
+    try {
+      // Intenta ejecutar la consulta
+      const [votos] = await connection.query('SELECT * FROM votos');
+      console.log('Consulta ejecutada exitosamente');
+      
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*' // Permite CORS
+        },
+        body: JSON.stringify(votos)
+      };
+    } catch (queryError) {
+      console.error('Error en la consulta:', queryError);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          error: 'Error al ejecutar la consulta',
+          details: queryError.message
+        })
+      };
+    } finally {
+      // Siempre libera la conexión
+      connection.release();
+    }
   } catch (error) {
-    console.error('Error detallado:', {
-      message: error.message,
-      code: error.code,
-      errno: error.errno,
-      sqlMessage: error.sqlMessage,
-      host: process.env.DB_HOST,
-      database: process.env.DB_NAME,
-      port: process.env.DB_PORT
-    });
-    
+    console.error('Error de conexión:', error);
     return {
       statusCode: 500,
       body: JSON.stringify({
-        error: 'Error en base de datos',
+        error: 'Error al conectar con la base de datos',
         details: error.message,
-        code: error.code
+        host: process.env.DB_HOST,
+        database: process.env.DB_NAME,
+        port: process.env.DB_PORT
       })
     };
   }
 };
-
-/* Este codigo esta comentado porque me sirve para hacer pruebas, genera datos en duro para probar la respuesta.
+/*
+ //Este codigo esta comentado porque me sirve para hacer pruebas, genera datos en duro para probar la respeusta.
 exports.handler = async function(event, context) {
   console.log("Función resultados ejecutándose");
   

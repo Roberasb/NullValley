@@ -1,9 +1,26 @@
 const pool = require('./db-config');
 
 exports.handler = async (event, context) => {
+  // Headers CORS
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  };
+
+  // Manejar preflight OPTIONS
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
+  }
+
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
+      headers,
       body: JSON.stringify({ error: 'Método no permitido' })
     };
   }
@@ -14,6 +31,7 @@ exports.handler = async (event, context) => {
     if (candidato !== 'David Larousse' && candidato !== 'Jonathan Lowrie') {
       return {
         statusCode: 400,
+        headers,
         body: JSON.stringify({
           error: 'Candidato inválido. Debe ser "David Larousse" o "Jonathan Lowrie"'
         })
@@ -27,11 +45,13 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers,
       body: JSON.stringify({ message: 'Voto registrado exitosamente' })
     };
   } catch (error) {
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({
         error: 'Error al registrar voto',
         details: error.message

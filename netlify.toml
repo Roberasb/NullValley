@@ -5,7 +5,7 @@
   functions = "../netlify/functions"
 
 [functions]
-  external_node_modules = ["mysql2", "mysql2/promise"]  
+  external_node_modules = ["mysql2"]
   node_bundler = "esbuild"
 
 [dev]

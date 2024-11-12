@@ -1,9 +1,26 @@
 const pool = require('./db-config');
 
 exports.handler = async (event, context) => {
+  // Headers CORS
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  };
+
+  // Manejar preflight OPTIONS
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
+  }
+
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
+      headers,
       body: JSON.stringify({ error: 'Método no permitido' })
     };
   }
@@ -22,12 +39,14 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers,
       body: JSON.stringify({ message: 'Votación reiniciada exitosamente' })
     };
   } catch (error) {
     await pool.query('ROLLBACK');
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({
         error: 'Error al reiniciar votación y respaldar datos',
         details: error.message
