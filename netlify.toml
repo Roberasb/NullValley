@@ -1,0 +1,25 @@
+[build]
+  base = "frontend-react"
+  command = "npm install && npm --prefix ../netlify/functions install && npm run build" #Dejo esta anotacion porque fue un temon, finalmente el problema era que faltaba hacer el npm intall del contenido de la carpeta functions. 
+  publish = "build"
+  functions = "../netlify/functions"
+
+[functions]
+  external_node_modules = ["mysql2"]
+  node_bundler = "esbuild"
+
+[dev]
+  framework = "#custom"
+  command = "npm --prefix frontend-react start"    
+  targetPort = 3000       
+  port = 8888
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
