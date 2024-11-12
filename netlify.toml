@@ -1,6 +1,6 @@
 [build]
   base = "frontend-react"
-  command = "npm install && npm --prefix ../netlify/functions install && npm run build"
+  command = "npm install && npm --prefix ../netlify/functions install && npm run build" #Dejo esta anotacion porque fue un temon, finalmente el problema era que faltaba hacer el npm intall del contenido de la carpeta functions. 
   publish = "build"
   functions = "../netlify/functions"
 
