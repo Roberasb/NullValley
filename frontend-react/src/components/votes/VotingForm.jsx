@@ -185,8 +185,8 @@ const VotingForm = () => {
                 required
               >
                 <option value="">Seleccionar...</option>
-                <option value="2">+2</option>
-                <option value="-1">-1</option>
+                <option value="2">Positivo (+2 ptos)</option>
+                <option value="-1">Negativo (-1 pto)</option>
               </select>
               {fieldErrors.rating && (
                 <p className="mt-1 text-sm text-red-600">{fieldErrors.rating}</p>
