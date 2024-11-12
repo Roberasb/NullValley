@@ -9,13 +9,13 @@ const VotingService = {
   // Obtener todos los votos
   async getVotes() {
     try {
-      console.log('Consultando:', `${API_URL}/resultados`);  // Para debug
+      //Comentario dejado ya que me es util para debuguear console.log('Consultando:', `${API_URL}/resultados`);  // Para debug
       const response = await fetch(`${API_URL}/resultados`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log('Datos recibidos:', data);  // Para debug
+      //Comentario dejado ya que me es util para debuguear console.log('Datos recibidos:', data);  // Para debug
       return this.formatVotesData(data);
     } catch (error) {
       console.error('Error completo:', error);
@@ -26,7 +26,7 @@ const VotingService = {
   // Registrar un voto
   async submitVote({ nickname, comment, candidate, rating }) {
     try {
-      console.log('Enviando voto a:', `${API_URL}/votar`);  // Para debug
+      //Comentario dejado ya que me es util para debuguear console.log('Enviando voto a:', `${API_URL}/votar`);  // Para debug
       const response = await fetch(`${API_URL}/votar`, {
         method: 'POST',
         headers: {
@@ -70,7 +70,7 @@ const VotingService = {
   formatVotesData(votesData) {
 
     // Para debug
-    console.log('Datos recibidos del backend:', votesData);
+    //Comentario dejado ya que me es util para debuguear console.log('Datos recibidos del backend:', votesData);
 
     const formattedData = {
       david: {
@@ -96,11 +96,11 @@ const VotingService = {
     votesData.forEach(vote => {
       const candidateKey = vote.candidato === 'David Larousse' ? 'david' : 'jonathan';
       
-      //console.log("hola1", candidateKey, vote.candidato );
+      //Comentario dejado ya que me es util para debuguear console.log("hola1", candidateKey, vote.candidato );
 
       formattedData[candidateKey].score += Number(vote.valoracion);
 
-      //console.log("hola2", vote.valoracion );
+      //Comentario dejado ya que me es util para debuguear console.log("hola2", vote.valoracion );
 
       formattedData[candidateKey].comments.push({
         nickname: vote.nickname,
