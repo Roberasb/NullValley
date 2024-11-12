@@ -1,11 +1,12 @@
 const mysql = require('mysql2/promise');
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
+// Valores de conexión
+const dbConfig = {
+  host: process.env.DB_HOST || 'autorack.proxy.rlwy.net',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'zGEQQgcRJJVrFsEBrTuDPjQvnMdDzjCr',
+  database: process.env.DB_NAME || 'railway',
+  port: process.env.DB_PORT || '11366',
   waitForConnections: true,
   connectionLimit: 5,  // Reducido para Netlify
   queueLimit: 0,      // Sin límite de cola
@@ -18,7 +19,25 @@ const pool = mysql.createPool({
   connectTimeout: 10000,  // 10 segundos
   timezone: '+00:00',    // Asegura consistencia horaria
   multipleStatements: false  // Por seguridad
+};
+
+// Solo cargar dotenv en desarrollo
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    require('dotenv').config();
+  } catch (error) {
+    console.log('dotenv no disponible en producción');
+  }
+}
+/*
+console.log('Configuración de BD:', {
+  host: dbConfig.host,
+  user: dbConfig.user,
+  database: dbConfig.database,
+  port: dbConfig.port
 });
+*/
+const pool = mysql.createPool(dbConfig);
 
 // Añadir listener para errores de conexión
 pool.on('error', (err) => {

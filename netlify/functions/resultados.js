@@ -1,48 +1,67 @@
 const pool = require('./db-config');
 
-exports.handler = async function(event, context) {
-  console.log('Iniciando función resultados');
-  
+exports.handler = async (event, context) => {
+  // Headers CORS
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  };
+
+  // Manejar preflight OPTIONS
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
+  }
+
   try {
+    console.log('Iniciando consulta a la base de datos');
+    /*console.log('Configuración DB:', {
+      host: process.env.DB_HOST,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT
+    });*/
+
+    // Primero probamos la conexión
     const connection = await pool.getConnection();
-    console.log('Conexión obtenida exitosamente');
+    console.log('Conexión establecida');
 
     try {
-      // Intenta ejecutar la consulta
-      const [votos] = await connection.query('SELECT * FROM votos');
-      console.log('Consulta ejecutada exitosamente');
-      
+      const [votos] = await pool.query('SELECT * FROM votos');
+      console.log(`Consulta exitosa: ${votos.length} registros encontrados`);
+      connection.release();
+
       return {
         statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*' // Permite CORS
-        },
+        headers,
         body: JSON.stringify(votos)
       };
     } catch (queryError) {
-      console.error('Error en la consulta:', queryError);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: 'Error al ejecutar la consulta',
-          details: queryError.message
-        })
-      };
-    } finally {
-      // Siempre libera la conexión
       connection.release();
+      console.error('Error en la consulta:', queryError);
+      throw queryError;
     }
   } catch (error) {
-    console.error('Error de conexión:', error);
+    console.error('Error completo:', {
+      message: error.message,
+      code: error.code,
+      errno: error.errno,
+      sqlState: error.sqlState,
+      sqlMessage: error.sqlMessage,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({
-        error: 'Error al conectar con la base de datos',
+        error: 'Error al obtener votos',
         details: error.message,
-        host: process.env.DB_HOST,
-        database: process.env.DB_NAME,
-        port: process.env.DB_PORT
+        code: error.code,
+        sqlMessage: error.sqlMessage
       })
     };
   }
